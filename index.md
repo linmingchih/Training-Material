@@ -8,28 +8,11 @@ permalink: /
 
 以下為目前站內可見的 Markdown 文件：
 
-{% assign markdown_paths = "" | split: "" %}
+{% assign markdown_pages = site.pages | where_exp: "p", "p.path != 'index.md' and p.ext == '.md'" | sort: "path" %}
 
-{% for page in site.pages %}
-  {% if page.path != "index.md" and page.path contains ".md" %}
-    {% assign markdown_paths = markdown_paths | push: page.path %}
-  {% endif %}
-{% endfor %}
-
-{% for file in site.static_files %}
-  {% if file.extname == ".md" and file.path != "/index.md" %}
-    {% assign path = file.path | remove_first: "/" %}
-    {% unless markdown_paths contains path %}
-      {% assign markdown_paths = markdown_paths | push: path %}
-    {% endunless %}
-  {% endif %}
-{% endfor %}
-
-{% assign markdown_paths = markdown_paths | sort %}
-
-{% if markdown_paths.size > 0 %}
-{% for path in markdown_paths %}
-- [{{ path | replace: ".md", "" }}]({{ path | relative_url }})
+{% if markdown_pages.size > 0 %}
+{% for page in markdown_pages %}
+- [{{ page.path | replace: ".md", "" }}]({{ page.url | relative_url }})
 {% endfor %}
 {% else %}
 目前找不到 Markdown 檔案。
