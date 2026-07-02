@@ -1,7 +1,6 @@
 ---
 layout: default
 title: 大型模擬自動化開發
-permalink: /大型模擬自動化開發/
 ---
 
 # 大型模擬自動化開發
