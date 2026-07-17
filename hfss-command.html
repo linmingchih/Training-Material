@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HFSS Command Builder</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --surface: #1a2332;
+      --surface2: #243044;
+      --border: #2d3a4f;
+      --text: #e8edf4;
+      --muted: #8b9cb3;
+      --accent: #f7941d;
+      --accent2: #00a3e0;
+      --success: #3ecf8e;
+      --danger: #ff6b6b;
+      --radius: 8px;
+      --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+      --mono: "Cascadia Code", "Consolas", monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1a2332 0%, #0f1419 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 1.25rem 2rem;
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    header p {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-top: 0.25rem;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 1.5rem 2rem 3rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+    }
+
+    .card h2 {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--accent2);
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media (max-width: 700px) {
+      .grid-2 { grid-template-columns: 1fr; }
+      main { padding: 1rem; }
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 0.35rem;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select,
+    textarea {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      padding: 0.55rem 0.75rem;
+      font-family: var(--font);
+      font-size: 0.9rem;
+      transition: border-color 0.15s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--accent2);
+    }
+
+    textarea { resize: vertical; min-height: 80px; font-family: var(--mono); font-size: 0.82rem; }
+
+    .field { margin-bottom: 0.85rem; }
+    .field:last-child { margin-bottom: 0; }
+
+    .checks {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 0.5rem 1rem;
+    }
+
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.88rem;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .check-item input { width: auto; accent-color: var(--accent); cursor: pointer; }
+
+    .check-item.has-tip {
+      position: relative;
+    }
+
+    .check-item.has-tip::after {
+      content: attr(data-tip);
+      position: absolute;
+      left: 0;
+      bottom: calc(100% + 8px);
+      width: max-content;
+      max-width: 320px;
+      padding: 0.55rem 0.75rem;
+      background: #0d1117;
+      border: 1px solid var(--accent2);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 0.78rem;
+      line-height: 1.45;
+      white-space: normal;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(4px);
+      transition: opacity 0.15s, transform 0.15s, visibility 0.15s;
+      pointer-events: none;
+      z-index: 200;
+    }
+
+    .check-item.has-tip:hover::after,
+    .check-item.has-tip:focus-within::after {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .hint {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 0.3rem;
+    }
+
+    .sub-section {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .sub-section h3 {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-bottom: 0.75rem;
+      font-weight: 500;
+    }
+
+    .output-card {
+      position: sticky;
+      bottom: 0;
+      background: #121a26;
+      border-color: var(--accent);
+      box-shadow: 0 -4px 24px rgba(0,0,0,0.4);
+    }
+
+    .output-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .output-header h2 { margin-bottom: 0; }
+
+    #command-output {
+      background: #0a0e14;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.85rem 1rem;
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      word-break: break-all;
+      white-space: pre-wrap;
+      min-height: 72px;
+      color: var(--success);
+    }
+
+    .btn {
+      background: var(--accent);
+      color: #111;
+      border: none;
+      border-radius: 6px;
+      padding: 0.5rem 1.1rem;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+
+    .btn:hover { opacity: 0.9; }
+    .btn:active { transform: scale(0.97); }
+
+    .btn-secondary {
+      background: var(--surface2);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-copied { background: var(--success) !important; color: #111 !important; }
+
+    .hidden { display: none !important; }
+
+    .radio-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1.25rem;
+    }
+
+    .radio-group label.check-item { font-size: 0.88rem; }
+
+    .warn {
+      background: rgba(255, 107, 107, 0.1);
+      border: 1px solid rgba(255, 107, 107, 0.3);
+      border-radius: 6px;
+      padding: 0.6rem 0.85rem;
+      font-size: 0.82rem;
+      color: #ffb4b4;
+      margin-top: 0.75rem;
+    }
+
+    .note {
+      background: rgba(0, 163, 224, 0.08);
+      border: 1px solid rgba(0, 163, 224, 0.25);
+      border-radius: 6px;
+      padding: 0.6rem 0.85rem;
+      font-size: 0.82rem;
+      color: #9dd4f0;
+      margin-top: 0.75rem;
+    }
+
+    .card.disabled {
+      opacity: 0.55;
+      pointer-events: none;
+    }
+
+    .card.disabled h2 {
+      color: var(--muted);
+    }
+
+    .check-item.disabled-option {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .check-item.disabled-option input {
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>HFSS Command Builder</h1>
+    <p>Ansys Electronics Desktop command-line generator &mdash; based on HFSS Help (2026 R1)</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Paths</h2>
+      <div class="grid-2">
+        <div class="field">
+          <label for="exe-path">ansysedt executable</label>
+          <input type="text" id="exe-path" value='"C:\Program Files\ANSYS Inc\v261\AnsysEM\ansysedt.exe"' placeholder='e.g. "C:\Program Files\ANSYS Inc\v261\AnsysEM\ansysedt.exe"'>
+          <p class="hint">Quote the path if it contains spaces.</p>
+        </div>
+        <div class="field">
+          <label for="project-path">Project file (.aedt / .aedtz)</label>
+          <input type="text" id="project-path" placeholder='e.g. "C:\Projects\MyDesign.aedt"'>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Run Command</h2>
+      <div class="field">
+        <select id="run-command">
+          <option value="">(none) &mdash; launch AEDT normally</option>
+          <option value="BatchSave">-BatchSave &mdash; save/convert project</option>
+          <option value="BatchSolve">-BatchSolve &mdash; batch solve</option>
+          <option value="BatchExtract">-BatchExtract &mdash; run extract script</option>
+          <option value="RunScript">-RunScript &mdash; run script</option>
+          <option value="RunScriptAndExit">-RunScriptAndExit &mdash; run script and exit</option>
+          <option value="Help">-Help &mdash; show help (standalone)</option>
+        </select>
+      </div>
+
+      <div id="batchsave-opts" class="sub-section hidden">
+        <h3>BatchSave options</h3>
+        <div class="checks">
+          <label class="check-item"><input type="checkbox" id="bs-norecurse"> norecurse</label>
+          <label class="check-item"><input type="checkbox" id="bs-forcearchive"> forcearchive</label>
+          <label class="check-item"><input type="checkbox" id="bs-previewonly"> previewonly</label>
+        </div>
+        <div class="field" style="margin-top:0.75rem">
+          <label for="bs-outputfolder">outputfolder</label>
+          <input type="text" id="bs-outputfolder" placeholder="e.g. C:\Output">
+        </div>
+      </div>
+
+      <div id="batchsolve-opts" class="sub-section hidden">
+        <h3>BatchSolve target</h3>
+        <div class="grid-2">
+          <div class="field">
+            <label for="design-name">Design name</label>
+            <input type="text" id="design-name" placeholder="e.g. HFSSDesign1">
+          </div>
+          <div class="field">
+            <label for="setup-type">Setup type</label>
+            <select id="setup-type">
+              <option value="">(all setups in design)</option>
+              <option value="Nominal">Nominal</option>
+              <option value="Optimetrics">Optimetrics</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label for="setup-name">Setup name (optional)</label>
+          <input type="text" id="setup-name" placeholder="e.g. Setup1">
+          <p class="hint">Format: designName, designName:Nominal, designName:Optimetrics, or designName:Nominal:SetupName</p>
+        </div>
+
+        <div class="sub-section">
+          <h3>Execution mode</h3>
+          <p class="hint" style="margin-bottom:0.6rem">Use <strong>(default)</strong> or <strong>-Auto</strong> for local single-machine solves. Manual modes (-Local/-Remote/-Distributed) do not support &ldquo;Auto Select Direct/Iterative&rdquo; solver in the setup.</p>
+          <div class="radio-group">
+            <label class="check-item"><input type="radio" name="exec-mode" value="" checked> (default) &mdash; use project HPC settings</label>
+            <label class="check-item"><input type="radio" name="exec-mode" value="Local"> -Local &mdash; manual HPC</label>
+            <label class="check-item"><input type="radio" name="exec-mode" value="Remote"> -Remote &mdash; manual HPC</label>
+            <label class="check-item"><input type="radio" name="exec-mode" value="Distributed"> -Distributed &mdash; manual HPC</label>
+          </div>
+          <div id="manual-hpc-warn" class="warn hidden">Manual HPC (-Local/-Remote/-Distributed) conflicts with &ldquo;Auto Select Direct/Iterative&rdquo; solver. Remove the manual mode, enable -Auto below, or change the setup solver to Direct/Iterative in HFSS.</div>
+          <div id="machinelist-section" class="field" style="margin-top:0.75rem">
+            <label for="machinelist">-MachineList</label>
+            <input type="text" id="machinelist" placeholder='list="host1:4:8:90%:1, host2:3:12" or file="C:\machines.txt" or num=4'>
+            <p class="hint">Machine format: MachineName:Tasks:Cores:RAM%:GPUs. Cores must exceed tasks.</p>
+          </div>
+          <div class="grid-2" style="margin-top:0.5rem">
+            <div class="field">
+              <label for="includetypes">includetypes</label>
+              <input type="text" id="includetypes" placeholder='e.g. Frequencies, Mesh Assembly'>
+            </div>
+            <div class="field">
+              <label for="excludetypes">excludetypes</label>
+              <input type="text" id="excludetypes" placeholder='e.g. Frequencies, Mesh Assembly'>
+            </div>
+          </div>
+          <div class="grid-2" style="margin-top:0.5rem">
+            <div class="field">
+              <label for="maxlevels">maxlevels</label>
+              <select id="maxlevels">
+                <option value="">(default)</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="numlevel1">numlevel1 (when maxlevels=2)</label>
+              <input type="number" id="numlevel1" min="1" placeholder="e.g. 4">
+            </div>
+          </div>
+        </div>
+
+        <div class="sub-section">
+          <h3>Auto HPC (-Auto)</h3>
+          <label class="check-item"><input type="checkbox" id="auto-hpc"> Enable -Auto</label>
+          <div id="auto-hpc-opts" class="hidden" style="margin-top:0.75rem">
+            <div class="field">
+              <label for="auto-variations">NumDistributedVariations</label>
+              <input type="number" id="auto-variations" min="2" placeholder="e.g. 4 (omit for sequential)">
+            </div>
+            <div class="grid-2">
+              <div class="field">
+                <label for="auto-numcores">numcores</label>
+                <input type="number" id="auto-numcores" min="1" placeholder="total cores (scheduler)">
+              </div>
+              <div class="field">
+                <label for="auto-num">num (distributed tasks)</label>
+                <input type="number" id="auto-num" min="1">
+              </div>
+            </div>
+            <div class="field">
+              <label for="auto-numgpus">numgpus</label>
+              <input type="number" id="auto-numgpus" min="0" placeholder="requires num or numcores">
+            </div>
+          </div>
+        </div>
+
+        <div class="sub-section">
+          <h3>Archive options (.aedtz)</h3>
+          <div class="checks">
+            <label class="check-item" id="gen-archive-label"><input type="checkbox" id="gen-archive"> -generatearchive</label>
+            <label class="check-item"><input type="checkbox" id="ao-overwrite"> overwritefiles</label>
+            <label class="check-item"><input type="checkbox" id="ao-repackage"> repackageresults</label>
+          </div>
+          <div id="archive-gen-warn" class="warn hidden">-generatearchive cannot be used with .aedtz input. Use repackageresults to write solve results back into the archive.</div>
+          <div class="grid-2" style="margin-top:0.5rem">
+            <div class="field">
+              <label for="ao-path">path=</label>
+              <input type="text" id="ao-path" placeholder="extract destination path">
+            </div>
+            <div class="field">
+              <label for="ao-winpath">winpath=</label>
+              <input type="text" id="ao-winpath" placeholder="Windows path for Linux batch jobs">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="batchextract-opts" class="sub-section hidden">
+        <h3>BatchExtract script</h3>
+        <div class="field">
+          <label for="extract-script">Script file (.py)</label>
+          <input type="text" id="extract-script" placeholder='e.g. "C:\Scripts\ExportToFile.py"'>
+        </div>
+        <p class="note">-Ng is required with -BatchExtract. Supported commands: ExportProfile, ExportConvergence, ExportMeshStats, ExportNetworkData, ExportNMFData, ExportEigenmodes, ExportTransientData, UpdateReports, ExportToFile.</p>
+      </div>
+
+      <div id="runscript-opts" class="sub-section hidden">
+        <h3>Script</h3>
+        <div class="field">
+          <label for="script-file">Script file</label>
+          <input type="text" id="script-file" placeholder='e.g. "C:\Scripts\test.py"'>
+        </div>
+        <div class="field">
+          <label for="script-args">-Scriptargs</label>
+          <input type="text" id="script-args" placeholder='e.g. "Design1 Setup1"'>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>General Options</h2>
+      <div class="checks">
+        <label class="check-item"><input type="checkbox" id="opt-iconic"> -Iconic</label>
+        <label class="check-item"><input type="checkbox" id="opt-ng"> -Ng (non-graphical)</label>
+        <label class="check-item"><input type="checkbox" id="opt-wait"> -WaitForLicense</label>
+        <label class="check-item"><input type="checkbox" id="opt-monitor"> -Monitor</label>
+        <label class="check-item"><input type="checkbox" id="opt-distribute"> -Distribute</label>
+        <label class="check-item"><input type="checkbox" id="opt-showmonitor"> -showmonitorjob</label>
+        <label class="check-item"><input type="checkbox" id="opt-showsubmit"> -showsubmitjob</label>
+        <label class="check-item"><input type="checkbox" id="opt-showscheduler"> -showselectscheduler</label>
+      </div>
+      <div class="grid-2" style="margin-top:0.85rem">
+        <div class="field">
+          <label for="opt-logfile">-LogFile</label>
+          <input type="text" id="opt-logfile" placeholder='e.g. "H:\Logs\mylog.log"'>
+        </div>
+        <div class="field">
+          <label for="opt-grpcsrv">-grpcsrv [port]</label>
+          <input type="text" id="opt-grpcsrv" placeholder="e.g. 50051 or 50051:50150">
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="field">
+          <label for="opt-validate">-validateonly</label>
+          <select id="opt-validate">
+            <option value="">(not set)</option>
+            <option value="true">true</option>
+            <option value="false">false</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="opt-autoextract">-AutoExtract</label>
+          <select id="opt-autoextract">
+            <option value="">(not set)</option>
+            <option value="standalone">standalone (profile, convergence, CSV)</option>
+            <option value="reports, fieldplots">reports, fieldplots</option>
+            <option value="reports">reports</option>
+            <option value="fieldplots">fieldplots</option>
+          </select>
+        </div>
+      </div>
+      <div id="autoextract-warn" class="warn hidden">-AutoExtract requires -BatchSolve.</div>
+    </section>
+
+    <section class="card disabled" id="batchoptions-card">
+      <h2>Batch Options (-Batchoptions)</h2>
+      <p class="hint" id="batchoptions-hint" style="margin-bottom:0.75rem">Valid with -BatchSolve, -BatchSave, or -BatchExtract. Use single quotes inside double quotes.</p>
+      <div id="batchoptions-disabled-note" class="note">Select -BatchSolve, -BatchSave, or -BatchExtract above to enable batch options.</div>
+      <div id="batchoptions-body" class="hidden">
+      <div class="grid-2">
+        <div class="field">
+          <label for="bo-processors">NumberOfProcessors</label>
+          <input type="number" id="bo-processors" min="1" placeholder="Desktop/Settings/ProjectOptions/NumberOfProcessors">
+        </div>
+        <div class="field">
+          <label for="bo-cores">NumCoresPerDistributedTask</label>
+          <input type="number" id="bo-cores" min="1" placeholder="HFSS/NumCoresPerDistributedTask">
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="field">
+          <label for="bo-projdir">ProjectDirectory</label>
+          <input type="text" id="bo-projdir" placeholder="C:\projects">
+        </div>
+        <div class="field">
+          <label for="bo-tempdir">TempDirectory</label>
+          <input type="text" id="bo-tempdir" placeholder="C:\temp">
+        </div>
+      </div>
+      <div class="checks" style="margin-top:0.5rem">
+        <label class="check-item"><input type="checkbox" id="bo-startmesh"> HFSS/CreateStartingMesh=1 (mesh only, no solve)</label>
+        <label class="check-item"><input type="checkbox" id="bo-gpu"> HFSS/EnableGPU=1</label>
+        <label class="check-item"><input type="checkbox" id="bo-gpu-sbr"> HFSS/EnableGPUforSBR=1</label>
+        <label class="check-item"><input type="checkbox" id="bo-offcore"> HFSS/AllowOffCore=1</label>
+      </div>
+      <div class="grid-2" style="margin-top:0.5rem">
+        <div class="field">
+          <label for="bo-hpc">HPCLicenseType</label>
+          <select id="bo-hpc">
+            <option value="">(default)</option>
+            <option value="pack">pack</option>
+            <option value="pool">pool</option>
+            <option value="none">none</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="bo-priority">DefaultProcessPriority</label>
+          <select id="bo-priority">
+            <option value="">(default)</option>
+            <option value="Critical">Critical</option>
+            <option value="Above Normal">Above Normal</option>
+            <option value="Normal">Normal</option>
+            <option value="Below Normal">Below Normal</option>
+            <option value="Idle">Idle</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="field">
+          <label for="bo-mpi-vendor">MPIVendor</label>
+          <select id="bo-mpi-vendor">
+            <option value="">(default)</option>
+            <option value="Intel">Intel</option>
+            <option value="Microsoft">Microsoft</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="bo-mpi-version">MPIVersion</label>
+          <select id="bo-mpi-version">
+            <option value="">(default)</option>
+            <option value="Default">Default</option>
+            <option value="2018">2018</option>
+            <option value="2021">2021</option>
+          </select>
+        </div>
+      </div>
+      <div class="field" style="margin-top:0.5rem">
+        <label for="bo-custom">Custom -Batchoptions (overrides above)</label>
+        <textarea id="bo-custom" placeholder='e.g. &apos;HFSS/CreateStartingMesh&apos;=1 &apos;Desktop/Settings/ProjectOptions/NumberOfProcessors&apos;=4'></textarea>
+        <p class="hint">Enter registry key=value pairs. Will be wrapped in double quotes automatically.</p>
+      </div>
+      <div class="field" style="margin-top:0.5rem">
+        <label for="bo-file">Or batchoptions file</label>
+        <input type="text" id="bo-file" placeholder="path to config file (no quotes)">
+      </div>
+      </div>
+    </section>
+
+    <section class="card output-card">
+      <div class="output-header">
+        <h2>Generated Command</h2>
+        <div style="display:flex;gap:0.5rem">
+          <button class="btn btn-secondary" id="btn-reset" type="button">Reset</button>
+          <button class="btn" id="btn-copy" type="button">Copy to Clipboard</button>
+        </div>
+      </div>
+      <div id="command-output"></div>
+      <div id="validation-warn" class="warn hidden"></div>
+    </section>
+  </main>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    const BATCH_CMDS = new Set(["BatchSolve", "BatchSave", "BatchExtract"]);
+
+    const CHECKBOX_TIPS = {
+      "bs-norecurse": "Only process .aedt/.aedtz/.a3dcomp files in the top-level folder. Subfolders are skipped.",
+      "bs-forcearchive": "Convert project files and save them as archive files (.aedtz).",
+      "bs-previewonly": "Do not convert files. Write a preview of filenames to the batch log only.",
+      "auto-hpc": "Enable automatic HPC settings. Requires -MachineList list= or numcores=. Supports Auto Select Direct/Iterative solver.",
+      "gen-archive": "Create an archive (.aedtz) after batch solve. Only for .aedt input — not valid when the project is already an .aedtz archive.",
+      "ao-overwrite": "When restoring an .aedtz, allow non-project files to overwrite existing files on disk.",
+      "ao-repackage": "After batch solve on an archive, add the solve results back into the .aedtz file.",
+      "opt-iconic": "Launch Electronics Desktop minimized (iconified) in the taskbar.",
+      "opt-ng": "Run in non-graphical mode without the GUI. Required for -BatchExtract.",
+      "opt-wait": "Wait until an AEDT license becomes available before starting.",
+      "opt-monitor": "Send batch progress to stdout and errors/fatal messages to stderr in real time.",
+      "opt-distribute": "Distribute the batch solve across multiple machines. Must be used with -BatchSolve.",
+      "opt-showmonitor": "Open the Monitor Job dialog on launch.",
+      "opt-showsubmit": "Open the Submit Job dialog on launch.",
+      "opt-showscheduler": "Open the Select Scheduler dialog on launch.",
+      "bo-startmesh": "Create the starting mesh and run mesh operations only. The setup will NOT be solved.",
+      "bo-gpu": "Enable GPU acceleration for transient and frequency-domain solutions.",
+      "bo-gpu-sbr": "Allow GPU to be used for SBR+ solutions.",
+      "bo-offcore": "Allow the solver to use off-core memory when RAM is insufficient."
+    };
+
+    function applyCheckboxTips() {
+      document.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
+        const tip = CHECKBOX_TIPS[cb.id];
+        if (!tip) return;
+        const label = cb.closest(".check-item");
+        if (!label) return;
+        label.classList.add("has-tip");
+        label.setAttribute("data-tip", tip);
+      });
+    }
+
+    function isBatchOptionsValid(runCmd) {
+      return BATCH_CMDS.has(runCmd);
+    }
+
+    function isArchiveInput() {
+      const path = $("project-path").value.trim().replace(/^["']|["']$/g, "");
+      return /\.aedtz$/i.test(path);
+    }
+
+    function updateArchiveOptions() {
+      const isArchive = isArchiveInput();
+      const genArchive = $("gen-archive");
+      const genLabel = $("gen-archive-label");
+      if (isArchive && genArchive.checked) genArchive.checked = false;
+      genArchive.disabled = isArchive;
+      genLabel.classList.toggle("disabled-option", isArchive);
+      $("archive-gen-warn").classList.toggle("hidden", !isArchive);
+    }
+
+    function quoteIfNeeded(path) {
+      if (!path) return "";
+      const trimmed = path.trim();
+      if (!trimmed) return "";
+      if ((trimmed.startsWith('"') && trimmed.endsWith('"')) ||
+          (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
+        return trimmed;
+      }
+      if (/[\s]/.test(trimmed)) return `"${trimmed}"`;
+      return trimmed;
+    }
+
+    function escapePath(path) {
+      return path.replace(/\\/g, "\\\\");
+    }
+
+    function buildBatchSolveTarget() {
+      const design = $("design-name").value.trim();
+      const setupType = $("setup-type").value;
+      const setupName = $("setup-name").value.trim();
+      if (!design) return "";
+      let target = design;
+      if (setupType) target += ":" + setupType;
+      if (setupName) target += ":" + setupName;
+      return target;
+    }
+
+    function buildArchiveOptions() {
+      const parts = [];
+      if ($("ao-overwrite").checked) parts.push("overwritefiles");
+      if ($("ao-repackage").checked) parts.push("repackageresults");
+      const path = $("ao-path").value.trim();
+      if (path) parts.push("path=" + path);
+      const winpath = $("ao-winpath").value.trim();
+      if (winpath) parts.push("winpath=" + winpath);
+      return parts.length ? "-archiveoptions " + parts.join(" ") : "";
+    }
+
+    function buildBatchOptions() {
+      const custom = $("bo-custom").value.trim();
+      const file = $("bo-file").value.trim();
+      if (file) return "-Batchoptions " + file;
+      if (custom) {
+        const inner = custom.includes('"') ? custom : `"${custom}"`;
+        return "-Batchoptions " + inner;
+      }
+
+      const pairs = [];
+      const add = (key, val, isString) => {
+        if (val === "" || val === null || val === undefined) return;
+        const v = isString ? `'${escapePath(val)}'` : val;
+        pairs.push(`'${key}'=${v}`);
+      };
+
+      const proc = $("bo-processors").value;
+      if (proc) add("Desktop/Settings/ProjectOptions/NumberOfProcessors", proc, false);
+      const cores = $("bo-cores").value;
+      if (cores) add("HFSS/NumCoresPerDistributedTask", cores, false);
+      const projdir = $("bo-projdir").value.trim();
+      if (projdir) add("Desktop/ProjectDirectory", projdir, true);
+      const tempdir = $("bo-tempdir").value.trim();
+      if (tempdir) add("TempDirectory", tempdir, true);
+      if ($("bo-startmesh").checked) pairs.push("'HFSS/CreateStartingMesh'=1");
+      if ($("bo-gpu").checked) pairs.push("'HFSS/EnableGPU'=1");
+      if ($("bo-gpu-sbr").checked) pairs.push("'HFSS/EnableGPUforSBR'=1");
+      if ($("bo-offcore").checked) pairs.push("'HFSS/AllowOffCore'=1");
+      const hpc = $("bo-hpc").value;
+      if (hpc) pairs.push(`'HFSS/HPCLicenseType'='${hpc}'`);
+      const priority = $("bo-priority").value;
+      if (priority) pairs.push(`'HFSS/DefaultProcessPriority'='${priority}'`);
+      const mpiV = $("bo-mpi-vendor").value;
+      if (mpiV) pairs.push(`'HFSS/MPIVendor'='${mpiV}'`);
+      const mpiVer = $("bo-mpi-version").value;
+      if (mpiVer) pairs.push(`'HFSS/MPIVersion'='${mpiVer}'`);
+
+      if (!pairs.length) return "";
+      return `-Batchoptions "${pairs.join(" ")}"`;
+    }
+
+    function buildAutoHpc() {
+      if (!$("auto-hpc").checked) return "";
+      let auto = "-Auto";
+      const variations = $("auto-variations").value;
+      if (variations) auto += ` NumDistributedVariations=${variations}`;
+      return auto;
+    }
+
+    function buildMachineListExtras() {
+      const extras = [];
+      const ml = $("machinelist").value.trim();
+      if (ml) {
+        extras.push(ml.startsWith("-") ? ml : `-MachineList ${ml}`);
+      }
+      const inc = $("includetypes").value.trim();
+      if (inc) extras.push(inc.includes(" ") ? `"includetypes=${inc}"` : `includetypes=${inc}`);
+      const exc = $("excludetypes").value.trim();
+      if (exc) extras.push(exc.includes(" ") ? `"excludetypes=${exc}"` : `excludetypes=${exc}`);
+      const maxl = $("maxlevels").value;
+      if (maxl) extras.push(`maxlevels=${maxl}`);
+      const nl1 = $("numlevel1").value;
+      if (nl1 && maxl === "2") extras.push(`numlevel1=${nl1}`);
+      return extras;
+    }
+
+    function buildCommand() {
+      const warnings = [];
+      const parts = [];
+
+      const exe = quoteIfNeeded($("exe-path").value) || "ansysedt";
+      const runCmd = $("run-command").value;
+      const project = quoteIfNeeded($("project-path").value);
+
+      if (runCmd === "Help") {
+        return { cmd: `${exe} -Help`, warnings: [] };
+      }
+
+      if ($("opt-iconic").checked) parts.push("-Iconic");
+      if ($("opt-ng").checked) parts.push("-Ng");
+      if ($("opt-wait").checked) parts.push("-WaitForLicense");
+      if ($("opt-monitor").checked) parts.push("-Monitor");
+      if ($("opt-distribute").checked) parts.push("-Distribute");
+      if ($("opt-showmonitor").checked) parts.push("-showmonitorjob");
+      if ($("opt-showsubmit").checked) parts.push("-showsubmitjob");
+      if ($("opt-showscheduler").checked) parts.push("-showselectscheduler");
+
+      const logfile = $("opt-logfile").value.trim();
+      if (logfile) parts.push("-LogFile", quoteIfNeeded(logfile));
+
+      const grpc = $("opt-grpcsrv").value.trim();
+      if (grpc) parts.push("-grpcsrv", grpc);
+
+      const validate = $("opt-validate").value;
+      if (validate) parts.push(`-validateonly=${validate}`);
+
+      const autoExtract = $("opt-autoextract").value;
+      if (autoExtract) {
+        if (runCmd !== "BatchSolve") warnings.push("-AutoExtract requires -BatchSolve.");
+        if (autoExtract === "standalone") parts.push("-AutoExtract");
+        else parts.push(`-AutoExtract "${autoExtract}"`);
+      }
+
+      const bo = buildBatchOptions();
+      if (bo && isBatchOptionsValid(runCmd)) {
+        parts.push(bo);
+      }
+
+      const autoHpc = buildAutoHpc();
+      if (autoHpc) parts.push(autoHpc);
+
+      const execMode = document.querySelector('input[name="exec-mode"]:checked')?.value;
+      const usingManualHpc = !!execMode;
+      if (usingManualHpc) {
+        parts.push(`-${execMode}`);
+        if (!$("auto-hpc").checked) {
+          warnings.push("Manual HPC (-Local/-Remote/-Distributed) is incompatible with Auto Select Direct/Iterative solver. Use default execution, -Auto, or set solver to Direct/Iterative in the setup.");
+        }
+      }
+      parts.push(...buildMachineListExtras());
+
+      if (runCmd === "BatchSave") {
+        const bsOpts = [];
+        if ($("bs-norecurse").checked) bsOpts.push("norecurse");
+        if ($("bs-forcearchive").checked) bsOpts.push("forcearchive");
+        if ($("bs-previewonly").checked) bsOpts.push("previewonly");
+        const outFolder = $("bs-outputfolder").value.trim();
+        if (outFolder) bsOpts.push("outputfolder=" + outFolder);
+        const target = project || quoteIfNeeded($("project-path").value);
+        parts.push("-BatchSave");
+        if (bsOpts.length) parts.push(bsOpts.join(" "));
+        if (target) parts.push(target);
+      } else if (runCmd === "BatchSolve") {
+        if ($("gen-archive").checked && !isArchiveInput()) parts.push("-generatearchive");
+        else if ($("gen-archive").checked && isArchiveInput()) {
+          warnings.push("-generatearchive cannot be used with .aedtz. Use -archiveoptions repackageresults instead.");
+        }
+        const archiveOpts = buildArchiveOptions();
+        if (archiveOpts) parts.push(archiveOpts);
+        const target = buildBatchSolveTarget();
+        parts.push("-BatchSolve");
+        if (target) parts.push(target);
+        if (project) parts.push(project);
+        else warnings.push("Project file path is required for -BatchSolve.");
+      } else if (runCmd === "BatchExtract") {
+        if (!$("opt-ng").checked) warnings.push("-Ng is required with -BatchExtract.");
+        const script = quoteIfNeeded($("extract-script").value);
+        parts.push("-BatchExtract");
+        if (script) parts.push(script);
+        if (project) parts.push(project);
+        else warnings.push("Project file path is required for -BatchExtract.");
+      } else if (runCmd === "RunScript" || runCmd === "RunScriptAndExit") {
+        const scriptArgs = $("script-args").value.trim();
+        if (scriptArgs) parts.push("-Scriptargs", quoteIfNeeded(scriptArgs));
+        const script = quoteIfNeeded($("script-file").value);
+        parts.push(`-${runCmd}`);
+        if (script) parts.push(script);
+      } else if (!runCmd && project) {
+        parts.push(project);
+      }
+
+      const cmd = [exe, ...parts].join(" ");
+      return { cmd, warnings };
+    }
+
+    function setBatchOptionsEnabled(enabled) {
+      const card = $("batchoptions-card");
+      const body = $("batchoptions-body");
+      const note = $("batchoptions-disabled-note");
+      card.classList.toggle("disabled", !enabled);
+      body.classList.toggle("hidden", !enabled);
+      note.classList.toggle("hidden", enabled);
+      body.querySelectorAll("input, select, textarea").forEach((el) => {
+        el.disabled = !enabled;
+      });
+    }
+
+    function updateUI() {
+      const runCmd = $("run-command").value;
+      setBatchOptionsEnabled(isBatchOptionsValid(runCmd));
+      $("batchsave-opts").classList.toggle("hidden", runCmd !== "BatchSave");
+      $("batchsolve-opts").classList.toggle("hidden", runCmd !== "BatchSolve");
+      $("batchextract-opts").classList.toggle("hidden", runCmd !== "BatchExtract");
+      $("runscript-opts").classList.toggle("hidden", runCmd !== "RunScript" && runCmd !== "RunScriptAndExit");
+
+      const execMode = document.querySelector('input[name="exec-mode"]:checked')?.value;
+      const usingManualHpc = !!execMode;
+      $("machinelist-section").classList.toggle("hidden", !usingManualHpc && !$("auto-hpc").checked);
+      $("manual-hpc-warn").classList.toggle("hidden", !usingManualHpc);
+
+      $("auto-hpc-opts").classList.toggle("hidden", !$("auto-hpc").checked);
+
+      const autoExtract = $("opt-autoextract").value;
+      $("autoextract-warn").classList.toggle("hidden", !autoExtract || runCmd === "BatchSolve");
+
+      if (runCmd === "BatchExtract" && !$("opt-ng").checked) {
+        $("opt-ng").checked = true;
+      }
+
+      updateArchiveOptions();
+
+      const { cmd, warnings } = buildCommand();
+      $("command-output").textContent = cmd;
+
+      const warnEl = $("validation-warn");
+      if (warnings.length) {
+        warnEl.textContent = warnings.join(" ");
+        warnEl.classList.remove("hidden");
+      } else {
+        warnEl.classList.add("hidden");
+      }
+    }
+
+    function bindEvents() {
+      const inputs = document.querySelectorAll("input, select, textarea");
+      inputs.forEach((el) => {
+        el.addEventListener("input", updateUI);
+        el.addEventListener("change", updateUI);
+      });
+
+      $("btn-copy").addEventListener("click", async () => {
+        const text = $("command-output").textContent;
+        try {
+          await navigator.clipboard.writeText(text);
+          const btn = $("btn-copy");
+          btn.textContent = "Copied!";
+          btn.classList.add("btn-copied");
+          setTimeout(() => {
+            btn.textContent = "Copy to Clipboard";
+            btn.classList.remove("btn-copied");
+          }, 2000);
+        } catch {
+          const ta = document.createElement("textarea");
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand("copy");
+          document.body.removeChild(ta);
+        }
+      });
+
+      $("btn-reset").addEventListener("click", () => {
+        document.querySelectorAll("input[type=text], input[type=number], textarea").forEach((el) => {
+          if (el.id === "exe-path") el.value = '"C:\\Program Files\\ANSYS Inc\\v261\\AnsysEM\\ansysedt.exe"';
+          else el.value = "";
+        });
+        document.querySelectorAll("input[type=checkbox]").forEach((el) => {
+          el.checked = false;
+        });
+        document.querySelectorAll("select").forEach((el) => { el.selectedIndex = 0; });
+        document.querySelector('input[name="exec-mode"][value=""]').checked = true;
+        updateUI();
+      });
+    }
+
+    bindEvents();
+    applyCheckboxTips();
+    updateUI();
+  </script>
+</body>
+</html>
