@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>PyAEDT-MCP — Presales Overview</title>
+<link rel="stylesheet" href="https://unpkg.com/reveal.js@5.1.0/dist/reset.css">
+<link rel="stylesheet" href="https://unpkg.com/reveal.js@5.1.0/dist/reveal.css">
+<link rel="stylesheet" href="https://unpkg.com/reveal.js@5.1.0/dist/theme/black.css">
+<link rel="stylesheet" href="https://unpkg.com/reveal.js@5.1.0/plugin/highlight/monokai.css">
+<style>
+
+:root {
+  --ansys-gold: #FFB71B;
+  --ansys-gold-dk: #C89211;
+  --ansys-blue: #00629F;
+  --ansys-red:  #FB471F;
+  --ansys-gray: #898A8D;
+  --ansys-lite: #D9D8D6;
+  --bg-0: #0b1220;
+  --bg-1: #111827;
+  --fg:   #F5F5F4;
+}
+
+.reveal { font-family: "Calibri","Segoe UI","Helvetica Neue",Arial,sans-serif; color: var(--fg); }
+.reveal .slides section {
+  text-align: left;
+  padding: 0 24px 12px;
+  box-sizing: border-box;
+}
+.reveal h1, .reveal h2, .reveal h3, .reveal h4 {
+  font-family: "Calibri","Segoe UI",Arial,sans-serif; color: var(--fg);
+  text-transform: none; letter-spacing: -0.01em;
+  margin: 0 0 0.35em; line-height: 1.15;
+}
+.reveal h1 { font-size: 2.9em; font-weight: 700; }
+.reveal h2 { font-size: 1.6em; font-weight: 700; border-bottom: 3px solid var(--ansys-gold); padding: 0 0 0.1em; display: inline-block; }
+.reveal h3 { font-size: 1.3em; font-weight: 400; color: var(--ansys-lite); }
+.reveal h4 { font-size: 1.02em; font-weight: 700; margin-bottom: 0.3em; }
+.reveal p { margin: 0.3em 0; }
+.reveal a { color: var(--ansys-gold); text-decoration: none; border-bottom: 1px dotted rgba(255,183,27,0.5); }
+.reveal a:hover { color: #fff; border-bottom-color: #fff; }
+.reveal code { background: rgba(255,255,255,0.06); color: var(--ansys-gold); padding: 0 0.3em; border-radius: 3px; font-size: 0.88em; }
+.reveal pre { box-shadow: none; background: #0f1a2a; border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; margin: 0.3em 0; width: 100%; }
+.reveal pre code { background: transparent; color: #e6edf3; padding: 0.7em 0.85em; display: block; font-size: 0.55em; line-height: 1.35; }
+.reveal ul, .reveal ol { line-height: 1.35; margin: 0.2em 0 0.2em 1.1em; }
+.reveal ul.big li { margin-bottom: 0.28em; font-size: 1.02em; }
+
+/* Reveal background */
+.reveal .slides { color: var(--fg); }
+.reveal-viewport { background: var(--bg-1); }
+
+/* accents */
+.accent   { color: var(--ansys-gold); }
+.hgold    { color: var(--ansys-gold); border-left: 4px solid var(--ansys-gold);   padding-left: 0.4em; }
+.hblue    { color: #6BB6E8;           border-left: 4px solid var(--ansys-blue);   padding-left: 0.4em; }
+.hred     { color: #FF8A65;           border-left: 4px solid var(--ansys-red);    padding-left: 0.4em; }
+.dim      { color: var(--ansys-lite); font-size: 0.9em; }
+
+/* title slide */
+.title-slide { padding-top: 6vh; min-height: 720px; position: relative; }
+.title-slide .badge {
+  display: inline-block; background: var(--ansys-gold); color: #111;
+  font-weight: 700; padding: 0.25em 0.9em; border-radius: 4px;
+  letter-spacing: 0.05em; font-size: 0.75em; text-transform: uppercase;
+  margin-bottom: 0.9em;
+}
+.title-slide .subtitle { margin-top: -0.3em; }
+.title-slide .tagline { color: var(--ansys-lite); font-size: 1.05em; margin-top: 1.2em; }
+.title-slide .footer-note { color: var(--ansys-gray); position: absolute; bottom: 20px; left: 24px; font-size: 0.75em; }
+
+/* quote */
+.quote { margin-top: 0.8em; padding: 0.6em 0.9em; border-left: 4px solid var(--ansys-gold);
+         background: rgba(255,183,27,0.06); color: var(--ansys-lite); font-style: italic; font-size: 0.9em; }
+
+/* two columns */
+.cols  { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9em; margin-top: 0.4em; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.8em; margin-top: 0.4em; }
+.col   { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 0.7em 0.9em; font-size: 0.85em; }
+.col ul { margin: 0.2em 0 0 1em; }
+.col ol { margin: 0.2em 0 0 1em; }
+
+/* cards */
+.cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.7em; margin-top: 0.4em; }
+.card  { background: rgba(255,255,255,0.03); border-top: 3px solid var(--ansys-gold);
+         border-radius: 4px; padding: 0.55em 0.75em; font-size: 0.72em; }
+.card p { margin: 0.2em 0; line-height: 1.3; }
+.card h4 { font-size: 0.95em; margin-bottom: 0.25em; }
+
+/* arch table */
+table.arch { width: 100%; border-collapse: collapse; font-size: 0.68em; margin-top: 0.3em; }
+table.arch th { text-align: left; padding: 0.35em 0.55em; background: rgba(255,183,27,0.15); color: var(--ansys-gold); border-bottom: 2px solid var(--ansys-gold); }
+table.arch td { padding: 0.3em 0.55em; border-bottom: 1px solid rgba(255,255,255,0.07); vertical-align: top; }
+table.arch tr:last-child td { border-bottom: none; }
+
+/* workflow ordered lists */
+.wf { background: rgba(255,255,255,0.03); border-radius: 6px; padding: 0.55em 0.85em; }
+.wf h4 { font-size: 0.95em; }
+.wf ol { padding-left: 1.1em; font-size: 0.75em; margin-top: 0.25em; }
+.wf ol li { margin-bottom: 0.15em; }
+
+/* code side-by-side */
+.code-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7em; margin-top: 0.3em; }
+
+/* CTA */
+.cta h2 { border-bottom-color: #fff; color: #fff; }
+.cta-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 0.7em; margin: 0.7em 0 0.5em; }
+.cta-grid > div { background: rgba(255,255,255,0.06); padding: 0.7em 0.8em; border-radius: 6px; font-size: 0.85em; }
+.cta-grid h4 { color: var(--ansys-gold); margin-bottom: 0.2em; }
+.cta .thanks { margin-top: 0.8em; font-size: 1.3em; color: #fff; font-weight: 700; }
+
+/* Ansys logo top-right */
+.ansys-logo { position: fixed; top: 14px; right: 20px; height: 34px; width: auto; opacity: 0.9; z-index: 40; color: #fff; }
+.ansys-logo svg { height: 100%; width: auto; display: block; }
+
+/* Slide numbering */
+.reveal .progress { color: var(--ansys-gold); }
+.reveal .slide-number { background: transparent; color: var(--ansys-gray); font-family: "Calibri", sans-serif; }
+
+</style>
+</head>
+<body>
+<div class="ansys-logo" aria-label="Ansys"><svg fill="currentColor" viewBox="0 0 584.91 295.58" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="Layer_1" overflow="hidden"><defs></defs><g><path d="M277.37 54.17C283.56 61.48 286.55 72.54 286.55 87.15L286.55 150.12 254.51 150.12 254.51 88.65C254.51 81.53 253.19 76.47 250.58 73.09 247.96 69.91 243.83 68.22 238.4 68.22 231.65 68.22 226.4 70.28 222.27 74.59 218.15 78.9 216.27 84.53 216.27 91.65L216.27 150.13 184.23 150.13 184.23 45.92 215.34 45.92 215.34 60.72C219.09 55.09 223.78 50.78 229.77 47.79 235.59 44.79 242.33 43.3 249.63 43.3 262 43.3 271.37 47.05 277.37 54.17"/><path d="M321.78 148.62C313.72 146.37 306.78 143.19 300.97 139.25L309.41 117.15C315.03 120.89 321.4 123.89 328.15 126.14 334.89 128.2 341.82 129.32 348.76 129.32 353.63 129.32 357.57 128.56 360.38 126.88 363.19 125.19 364.5 122.95 364.5 120.13 364.5 117.51 363.57 115.64 361.7 114.13 359.82 112.63 356.26 111.51 351.02 110.38L333.96 106.63C323.84 104.38 316.53 100.81 311.66 96.13 306.98 91.44 304.54 84.89 304.54 76.64 304.54 70.08 306.42 64.45 310.17 59.39 313.92 54.52 319.16 50.58 326.1 47.77 333.04 44.96 340.71 43.46 349.52 43.46 357.02 43.46 364.32 44.58 371.45 46.83 378.57 49.07 384.94 52.26 390.57 56.38L382.14 77.56C371.08 69.87 360.21 66.13 349.34 66.13 344.47 66.13 340.53 67.06 337.72 68.75 334.91 70.44 333.41 72.88 333.41 76.06 333.41 78.31 334.34 80.19 336.03 81.32 337.72 82.63 340.72 83.75 345.03 84.88L362.65 89C373.33 91.44 381.02 95 385.88 99.87 390.75 104.74 393.19 111.3 393.19 119.73 393.19 129.85 389.26 137.72 381.19 143.35 373.13 149.16 362.07 151.97 348.22 151.97 338.66 151.97 329.85 150.85 321.79 148.6"/><path d="M513.5 148.62C505.44 146.37 498.5 143.19 492.7 139.25L501.14 117.15C506.76 120.89 513.13 123.89 519.88 126.14 526.62 128.2 533.55 129.32 540.49 129.32 545.36 129.32 549.3 128.56 552.11 126.88 554.92 125.19 556.24 122.95 556.24 120.13 556.24 117.51 555.31 115.64 553.43 114.13 551.55 112.62 548 111.51 542.75 110.38L525.7 106.63C515.57 104.38 508.27 100.81 503.39 96.13 498.71 91.44 496.27 84.89 496.27 76.64 496.27 70.08 498.15 64.45 501.9 59.39 505.65 54.52 510.89 50.58 517.83 47.77 524.77 44.96 532.44 43.46 541.26 43.46 548.75 43.46 556.05 44.58 563.18 46.83 570.3 49.07 576.67 52.26 582.3 56.38L573.87 77.56C562.81 69.87 551.94 66.13 541.08 66.13 536.21 66.13 532.27 67.06 529.45 68.75 526.64 70.44 525.14 72.88 525.14 76.06 525.14 78.31 526.07 80.19 527.76 81.32 529.44 82.63 532.44 83.75 536.75 84.88L554.37 89C565.05 91.44 572.74 95 577.6 99.87 582.47 104.74 584.91 111.3 584.91 119.73 584.91 129.85 580.98 137.72 572.92 143.35 564.86 149.16 553.8 151.97 539.94 151.97 530.39 151.97 521.57 150.85 513.51 148.6"/></g><path d="M63.72 0 0 150.11 43.48 150.11 104.94 0 63.72 0Z" fill="#FCB51A"/><path d="M112.44 4.88 91.82 55.29 130.62 150.11 174.29 150.11 112.44 4.88Z"/><path d="M427.26 45.92 451.47 94.79 433.85 128.65 395.59 45.92 427.26 45.92Z"/><g><path d="M192.83 215.25C192.83 212.46 191.44 210.35 185.25 210.35 179.06 210.35 177.67 212.44 177.67 215.25L177.67 222.83C177.67 225.13 178.46 227.42 180.66 229.31L201.6 247.24C204.59 249.73 206.38 252.83 206.38 256L206.38 267.36C206.38 274.14 198.42 277.92 185.26 277.92 170.7 277.92 163.73 274.65 163.73 267.36L163.73 257.49 176.9 257.49 176.9 266.95C176.9 270.34 179.49 272.33 185.27 272.33 190.65 272.33 193.25 270.34 193.25 266.95L193.25 256.88C193.25 254.38 192.24 252.49 189.46 249.99L170.1 233.17C166.52 230.07 164.5 227.69 164.5 224L164.5 215.34C164.5 208.26 171.87 204.77 185.24 204.77 200.01 204.77 205.99 208.26 205.99 214.84L205.99 224.01 192.84 224.01 192.84 215.23 192.84 215.23 192.84 215.25Z" fill="#592982"/><path d="M332.85 265.42C332.85 269.41 334.44 272.2 342.82 272.2 351.2 272.2 352.79 269.41 352.79 265.42L352.79 216.98C352.79 212.99 351.2 210.2 342.82 210.2 334.44 210.2 332.85 212.99 332.85 216.98L332.85 265.42ZM319.71 216.76C319.71 209.69 325.09 204.59 342.82 204.59 360.55 204.59 365.93 209.68 365.93 216.76L365.93 265.6C365.93 272.68 360.55 277.77 342.82 277.77 325.09 277.77 319.68 272.68 319.68 265.6L319.68 216.76 319.7 216.76Z" fill="#592982"/><path d="M392.77 239.21C398.75 239.21 402.92 238.41 402.92 234.73L402.92 215.29C402.92 211.6 398.74 210.81 392.77 210.81L386.39 210.81 386.39 239.2 392.77 239.2 392.77 239.22ZM373.22 205.22 394.16 205.22C411.11 205.22 416.09 208.01 416.09 216.2L416.09 233.84C416.09 242 411.1 244.82 394.15 244.82L386.37 244.82 386.37 277.22 373.22 277.22 373.22 205.23 373.22 205.23Z" fill="#592982"/><path d="M448.95 215.09C448.95 212.3 447.56 210.19 441.37 210.19 435.18 210.19 433.77 212.28 433.77 215.09L433.77 222.67C433.77 224.97 434.57 227.26 436.76 229.14L457.7 247.08C460.69 249.57 462.47 252.64 462.47 255.84L462.47 267.2C462.47 273.98 454.51 277.77 441.34 277.77 426.79 277.77 419.81 274.47 419.81 267.2L419.81 257.35 432.97 257.35 432.97 266.83C432.97 270.23 435.57 272.22 441.34 272.22 446.73 272.22 449.31 270.23 449.31 266.83L449.31 256.76C449.31 254.27 448.33 252.37 445.52 249.88L426.18 233.03C422.61 229.93 420.59 227.55 420.59 223.87L420.59 215.19C420.59 208.11 427.96 204.63 441.33 204.63 456.08 204.63 462.06 208.11 462.06 214.7L462.06 223.87 448.9 223.87 448.9 215.09 448.95 215.09Z" fill="#592982"/><path d="M546.06 215.09C546.06 212.3 544.65 210.22 538.48 210.22 532.31 210.22 530.9 212.31 530.9 215.09L530.9 222.67C530.9 224.97 531.69 227.26 533.89 229.14L554.82 247.1C557.81 249.59 559.6 252.66 559.6 255.86L559.6 267.22C559.6 274 551.63 277.79 538.48 277.79 523.92 277.79 516.94 274.49 516.94 267.22L516.94 257.36 530.1 257.36 530.1 266.84C530.08 270.24 532.68 272.22 538.48 272.22 543.85 272.22 546.44 270.24 546.44 266.84L546.44 256.77C546.44 254.27 545.43 252.38 542.65 249.88L523.32 233.03C519.74 229.93 517.72 227.55 517.72 223.86L517.72 215.18C517.72 208.11 525.09 204.62 538.46 204.62 553.21 204.62 559.19 208.11 559.19 214.69L559.19 223.86 546.05 223.86 546.05 215.09Z" fill="#592982"/></g><path d="M247.08 205.22 260.27 205.22 231.43 295.56 218.27 295.56 247.08 205.22Z" fill="#592982"/><path d="M226.31 261.34 208.48 205.38 221.66 205.38 232.9 240.66 226.31 261.34Z" fill="#592982"/><path d="M503.09 205.22 516.25 205.22 487.43 295.58 474.24 295.58 503.09 205.22Z" fill="#592982"/><path d="M482.36 261.18 464.53 205.22 477.69 205.22 488.95 240.5 482.36 261.18Z" fill="#592982"/><g><path d="M311.59 277.18 311.65 277.18 311.65 216.2C311.65 208.04 306.66 205.22 289.72 205.22L264.36 205.22 264.36 277.19 277.52 277.19 277.52 210.8 288.34 210.8C294.32 210.8 298.49 211.6 298.49 215.28L298.49 277.17 311.59 277.17Z" fill="#592982"/><path d="M573.2 213.53C574.44 213.53 575.55 213.44 575.55 211.96 575.55 210.76 574.46 210.55 573.45 210.55L571.45 210.55 571.45 213.55 573.2 213.55 573.2 213.53ZM571.45 218.97 569.98 218.97 569.98 209.29 573.67 209.29C575.94 209.29 577.07 210.14 577.07 212.04 577.07 213.76 575.98 214.52 574.56 214.7L577.32 218.96 575.68 218.96 573.12 214.76 571.45 214.76 571.45 218.96ZM573.22 221.1C577.01 221.1 580 218.13 580 214.09 580 210.05 577 207.12 573.22 207.12 569.44 207.12 566.39 210.11 566.39 214.09 566.39 218.07 569.38 221.1 573.22 221.1M564.7 214.09C564.7 209.28 568.6 205.72 573.22 205.72 577.84 205.72 581.68 209.26 581.68 214.09 581.68 218.92 577.79 222.49 573.22 222.49 568.65 222.49 564.7 218.95 564.7 214.09" fill="#592982"/><path d="M22.84 232.15C22.84 228.83 22.13 226.2 20.71 224.27 19.28 222.34 17.34 221.38 14.87 221.38 11.82 221.38 9.52 222.73 8.01 225.44L8.01 239.54C9.51 242.24 11.82 243.57 14.94 243.57 17.36 243.57 19.27 242.6 20.7 240.69 22.13 238.77 22.84 235.92 22.84 232.14L22.84 232.16ZM27.89 232.72C27.89 237.21 26.87 240.83 24.81 243.57 22.75 246.31 19.96 247.7 16.45 247.7 12.94 247.7 10.05 246.56 7.99 244.3L7.99 258.51 2.95 258.51 2.95 217.64 7.56 217.64 7.8 220.91C9.86 218.37 12.71 217.09 16.37 217.09 20.03 217.09 22.71 218.43 24.79 221.11 26.86 223.77 27.89 227.5 27.89 232.26L27.89 232.72Z"/><path d="M40.34 243.29C41.92 243.29 43.42 242.88 44.84 242.06 46.27 241.25 47.3 240.18 47.93 238.88L47.93 232.83 43.97 232.83C37.8 232.83 34.69 234.63 34.69 238.26 34.69 239.84 35.21 241.08 36.27 241.96 37.33 242.85 38.67 243.29 40.33 243.29M48.7 247.14C48.41 246.56 48.18 245.52 47.99 244.03 45.65 246.47 42.84 247.68 39.59 247.68 36.68 247.68 34.29 246.85 32.43 245.21 30.56 243.57 29.64 241.49 29.64 238.95 29.64 235.89 30.81 233.5 33.15 231.79 35.49 230.09 38.78 229.25 43.01 229.25L47.92 229.25 47.92 226.93C47.92 225.17 47.4 223.75 46.34 222.71 45.28 221.67 43.74 221.15 41.68 221.15 39.88 221.15 38.37 221.6 37.16 222.51 35.95 223.42 35.33 224.52 35.33 225.81L30.26 225.81C30.26 224.34 30.78 222.92 31.82 221.55 32.87 220.19 34.29 219.1 36.08 218.28 37.88 217.48 39.83 217.09 41.98 217.09 45.38 217.09 48.06 217.93 49.97 219.63 51.9 221.33 52.89 223.68 52.97 226.65L52.97 240.23C52.97 242.94 53.33 245.09 54.02 246.7L54.02 247.13 48.7 247.13Z"/><path d="M70.75 222.16C69.99 222.04 69.16 221.97 68.26 221.97 64.95 221.97 62.71 223.38 61.52 226.2L61.52 247.16 56.48 247.16 56.48 217.65 61.39 217.65 61.46 221.05C63.13 218.42 65.47 217.09 68.5 217.09 69.48 217.09 70.23 217.21 70.73 217.47L70.73 222.17 70.75 222.15Z"/><path d="M84.24 210.49 84.24 217.63 89.74 217.63 89.74 221.53 84.24 221.53 84.24 239.86C84.24 241.05 84.48 241.93 84.97 242.53 85.47 243.12 86.31 243.42 87.49 243.42 88.07 243.42 88.87 243.31 89.89 243.1L89.89 247.16C88.56 247.53 87.27 247.7 86.01 247.7 83.75 247.7 82.05 247.03 80.9 245.66 79.75 244.3 79.19 242.36 79.19 239.85L79.19 221.55 73.81 221.55 73.81 217.65 79.19 217.65 79.19 210.51 84.23 210.51 84.23 210.49Z"/><path d="M105.4 232.71C105.4 235.99 106.16 238.62 107.68 240.59 109.2 242.57 111.23 243.56 113.78 243.56 116.33 243.56 118.38 242.55 119.9 240.55 121.4 238.54 122.17 235.72 122.17 232.1 122.17 228.87 121.41 226.24 119.87 224.24 118.33 222.24 116.3 221.22 113.75 221.22 111.2 221.22 109.24 222.22 107.72 224.19 106.19 226.17 105.44 229.01 105.44 232.7L105.4 232.7ZM100.32 232.12C100.32 229.22 100.89 226.63 102.02 224.32 103.16 222 104.73 220.23 106.77 218.97 108.79 217.71 111.12 217.09 113.72 217.09 117.74 217.09 120.98 218.49 123.47 221.26 125.96 224.04 127.2 227.74 127.2 232.36L127.2 232.72C127.2 235.59 126.65 238.17 125.54 240.45 124.44 242.73 122.88 244.51 120.82 245.78 118.78 247.06 116.42 247.7 113.77 247.7 109.77 247.7 106.53 246.3 104.05 243.53 101.57 240.74 100.33 237.06 100.33 232.48L100.33 232.12 100.33 232.14Z"/><path d="M133.75 247.14 133.75 221.53 129.1 221.53 129.1 217.64 133.75 217.64 133.75 214.6C133.75 211.44 134.59 208.99 136.28 207.26 137.96 205.53 140.35 204.67 143.45 204.67 144.61 204.67 145.76 204.82 146.91 205.13L146.63 209.19C145.77 209.02 144.87 208.95 143.9 208.95 142.26 208.95 141.01 209.42 140.11 210.39 139.22 211.36 138.78 212.72 138.78 214.52L138.78 217.65 145.08 217.65 145.08 221.54 138.78 221.54 138.78 247.15 133.74 247.15Z"/></g><path d="M2.94 160.77 2.94 162.48 409.57 162.48 410.3 160.77 2.94 160.77ZM450.15 160.77 449.42 162.48 579.6 162.48 579.6 160.77 450.15 160.77Z"/><path d="M463.69 45.92 413.65 162.45 445.32 162.45 495.37 45.92 463.69 45.92Z"/></svg></div>
+<div class="reveal">
+  <div class="slides">
+
+    <section data-background-gradient="linear-gradient(135deg,#0b1220 0%,#111827 55%,#00629F 140%)" class="title-slide">
+      <div class="badge">Presales Technical Overview</div>
+      <h1>PyAEDT-MCP</h1>
+      <h3 class="subtitle">Bring an AI copilot into <span class="accent">Ansys Electronics Desktop</span></h3>
+      <p class="tagline">A Model Context Protocol server for AEDT, built on PyAEDT + FastMCP</p>
+      <p class="footer-note">aedt-mcp.docs.pyansys.com/version/stable</p>
+    </section>
+    
+
+    <section>
+      <h2>What is <span class="accent">PyAEDT-MCP</span>?</h2>
+      <ul class="big">
+        <li>An <b>MCP server</b> for Ansys Electronics Desktop (AEDT)</li>
+        <li>Bridges any MCP client &rarr; a persistent <b>PyAEDT</b> Python session</li>
+        <li>Exposes a curated <b>tool surface</b>: lifecycle, projects, scripting, analysis, inspection, export</li>
+        <li>Built with <a href="https://github.com/jlowin/fastmcp">FastMCP</a>; can auto-connect to a running AEDT on startup</li>
+      </ul>
+      <div class="quote">"Your AI agent, sitting directly next to the AEDT solver."</div>
+    </section>
+    
+
+    <section>
+      <h2>Why an MCP layer for AEDT?</h2>
+      <div class="cols">
+        <div class="col">
+          <h4 class="hgold">Before</h4>
+          <ul>
+            <li>Copy/paste Tcl or PyAEDT snippets between chat &amp; IDE</li>
+            <li>No shared context between the LLM and AEDT state</li>
+            <li>Restarting AEDT for every experiment</li>
+          </ul>
+        </div>
+        <div class="col">
+          <h4 class="hblue">With PyAEDT-MCP</h4>
+          <ul>
+            <li>The agent <b>runs tools</b> directly against a live AEDT session</li>
+            <li><b>Persistent</b> Python interpreter across calls</li>
+            <li>Screenshots, logs, results streamed back to the model</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+    
+
+    <section>
+      <h2>Architecture at a glance</h2>
+      <table class="arch">
+        <thead><tr><th>Module</th><th>Responsibility</th></tr></thead>
+        <tbody>
+          <tr><td><code>server.py</code></td><td>App, CLI, startup, transports, typed context</td></tr>
+          <tr><td><code>tools.py</code></td><td>Connection, projects, scripting, analysis, inspection, export</td></tr>
+          <tr><td><code>helpers.py</code></td><td>Endpoint probes, version parsing, model introspection</td></tr>
+          <tr><td><code>prompts.py</code></td><td>System prompt: connection workflow &amp; tool-usage rules</td></tr>
+          <tr><td><code>toolsets.py</code></td><td>Groups tools into logical categories (discovery resource)</td></tr>
+          <tr><td><code>contexts.py</code></td><td>Optional guideline tools (<code>--include-context</code>)</td></tr>
+          <tr><td><code>aedt_helper/startup_code.py</code></td><td>Imports &amp; helpers loaded into the persistent session</td></tr>
+        </tbody>
+      </table>
+    </section>
+    
+
+    <section>
+      <h2>Curated tool surface</h2>
+      <div class="cards">
+        <div class="card"><h4>Lifecycle</h4><p><code>check_aedt_installed</code>, <code>check_aedt_status</code>, <code>launch_aedt</code>, <code>connect_to_aedt</code>, <code>disconnect_from_aedt</code>, <code>clear_aedt</code></p></div>
+        <div class="card"><h4>Projects</h4><p><code>list_projects</code>, <code>open_project</code>, <code>save_project</code>, <code>create_design</code></p></div>
+        <div class="card"><h4>Simulation</h4><p><code>validate_design</code>, <code>analyze_design</code>, export setup configuration</p></div>
+        <div class="card"><h4>Inspection &amp; results</h4><p>Model info, <code>screenshot</code>, logs, <code>export_results</code></p></div>
+        <div class="card"><h4>Scripting</h4><p><code>run_python_code</code> (inline) &middot; <code>run_python_script</code> (file)</p></div>
+        <div class="card"><h4>Discovery</h4><p><code>--dynamic-tool-discovery</code> hides AEDT-only tools until connected — saves LLM context.</p></div>
+      </div>
+    </section>
+    
+
+    <section>
+      <h2>End-to-end workflow blueprints</h2>
+      <div class="cols3">
+        <div class="wf">
+          <h4 class="hgold">HFSS patch antenna</h4>
+          <ol><li>connect / launch AEDT</li><li>create HFSS design</li><li>build geometry + setup via <code>run_python_code</code></li><li>solve &amp; report</li><li>screenshot</li></ol>
+        </div>
+        <div class="wf">
+          <h4 class="hblue">Maxwell motor</h4>
+          <ol><li>create Maxwell3D design</li><li>geometry &amp; materials</li><li>windings, excitations, motion</li><li>validate &rarr; analyze</li><li>torque / speed report</li></ol>
+        </div>
+        <div class="wf">
+          <h4 class="hred">Icepak thermal</h4>
+          <ol><li>create Icepak design</li><li>PCB, components, heat sources</li><li>boundary conditions</li><li>validate &rarr; analyze</li><li>temperature contour &amp; <code>export_results</code></li></ol>
+        </div>
+      </div>
+    </section>
+    
+
+    <section>
+      <h2>Install &amp; launch</h2>
+      <p class="dim">Prereqs: Python 3.12+, AEDT 2022 R2+, local or reachable AEDT.</p>
+      <div class="code-cols">
+        <pre><code class="lang-bash">## One-shot with uvx
+uvx --from git+https://github.com/ansys/pyaedt-mcp.git \
+    ansys-aedt-mcp
+
+## Or install with pip
+pip install git+https://github.com/ansys/pyaedt-mcp.git</code></pre>
+        <pre><code class="lang-bash">## Start AEDT in gRPC mode
+"C:\Program Files\ANSYS Inc\v261\AnsysEM\ansysedt.exe" \
+    -grpcsrv 50051
+
+## Server + auto-connect
+ansys-aedt-mcp --connect --machine localhost --port 50051
+ansys-aedt-mcp --transport http --http-host 127.0.0.1 --http-port 8080
+ansys-aedt-mcp --include-context --dynamic-tool-discovery</code></pre>
+      </div>
+    </section>
+    
+
+    <section>
+      <h2>Plugs into any MCP client</h2>
+      <div class="cols">
+        <div class="col">
+          <h4 class="hgold">Supported clients</h4>
+          <ul>
+            <li>Claude Code &amp; Claude Desktop</li>
+            <li>Visual Studio Code (MCP-compatible extensions)</li>
+            <li>Copilot CLI, Codex, Cursor</li>
+            <li>Anything speaking MCP over STDIO or HTTP</li>
+          </ul>
+        </div>
+        <div class="col">
+          <h4 class="hblue">Typical first call sequence</h4>
+          <ol>
+            <li><code>check_aedt_installed</code></li>
+            <li><code>check_aedt_status</code></li>
+            <li><code>launch_aedt</code> or <code>connect_to_aedt</code></li>
+            <li>open a project or <code>create_design</code></li>
+            <li>drive the rest with tools or <code>run_python_code</code></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+    
+
+    <section>
+      <h2>Best practices</h2>
+      <div class="cards">
+        <div class="card"><h4 class="hgold">Session</h4><p>Reuse the connection &mdash; each <code>launch_aedt</code> is expensive. Always <code>check_aedt_status</code> first; shut down with <code>disconnect_from_aedt</code>.</p></div>
+        <div class="card"><h4 class="hblue">Scripting</h4><p>Prefer many small <code>run_python_code</code> calls to inspect intermediate state. Ask for <code>get_guidelines_for</code> before generating PyAEDT code.</p></div>
+        <div class="card"><h4 class="hred">Data</h4><p>Extract only what you need, cache in Python vars, then disconnect &mdash; keep post-processing off AEDT.</p></div>
+        <div class="card"><h4 class="hgold">Visualization</h4><p>Save the project, then <code>screenshot</code> after geometry, meshing, and analysis for visual checkpoints.</p></div>
+        <div class="card"><h4 class="hblue">Workflow</h4><p>One dedicated tool per logical step. <code>save_project</code> after expensive stages so runs are resumable.</p></div>
+        <div class="card"><h4 class="hred">Performance</h4><p>Minimize AEDT restarts. Use AEDT's parametric solver for sweeps. Process results in Python.</p></div>
+      </div>
+    </section>
+    
+
+    <section data-background-gradient="linear-gradient(135deg,#0b1220 0%,#111827 55%,#FFB71B 220%)" class="cta">
+      <h2>Get started today</h2>
+      <div class="cta-grid">
+        <div><h4>Docs</h4><p><a href="https://aedt-mcp.docs.pyansys.com/version/stable/">aedt-mcp.docs.pyansys.com</a></p></div>
+        <div><h4>Source</h4><p><a href="https://github.com/ansys/pyaedt-mcp">github.com/ansys/pyaedt-mcp</a></p></div>
+        <div><h4>Discuss</h4><p><a href="https://github.com/ansys/pyaedt-mcp/discussions">GitHub Discussions</a></p></div>
+        <div><h4>Under the hood</h4><p><a href="https://github.com/ansys/pyaedt">PyAEDT</a> &middot; <a href="https://github.com/jlowin/fastmcp">FastMCP</a></p></div>
+      </div>
+      <p class="thanks">Thank you &mdash; questions?</p>
+    </section>
+    
+  </div>
+</div>
+<script src="https://unpkg.com/reveal.js@5.1.0/dist/reveal.js"></script>
+<script src="https://unpkg.com/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+<script src="https://unpkg.com/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+<script>
+  Reveal.initialize({
+    hash: true,
+    slideNumber: 'c/t',
+    controls: true,
+    progress: true,
+    center: true,
+    transition: 'slide',
+    width: 1280,
+    height: 800,
+    margin: 0.04,
+    minScale: 0.2,
+    maxScale: 2.0,
+    plugins: [ RevealHighlight, RevealNotes ]
+  });
+</script>
+</body>
+</html>
